@@ -4,6 +4,13 @@
 
 **Content-hash your MkDocs CSS/JS, and add Subresource Integrity so a CDN cannot serve tampered bytes.**
 
+[![CI](https://github.com/linmoxi33/mkdocs-asset-integrity/actions/workflows/ci.yml/badge.svg)](https://github.com/linmoxi33/mkdocs-asset-integrity/actions/workflows/ci.yml)
+[![docs](https://github.com/linmoxi33/mkdocs-asset-integrity/actions/workflows/docs.yml/badge.svg)](https://linmoxi33.github.io/mkdocs-asset-integrity/)
+![python](https://img.shields.io/badge/python-3.8%2B-blue)
+![license](https://img.shields.io/badge/license-MIT-green)
+
+📖 **[Documentation](https://linmoxi33.github.io/mkdocs-asset-integrity/)**
+
 MkDocs gives every asset you declare the same filename forever. Change
 `assets/custom.css` on Monday, deploy, and visitors whose browsers cached it
 last week keep the old copy — content updates, styling does not. Upstream has
