@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: ${{ matrix.os }} · py${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ["3.8", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "mkdocs==1.6.1" "mkdocs-material==9.6.14" mkdocs-minify-plugin pytest ruff
+          python -m pip install .
+
+      - name: Lint
+        run: ruff check src tests
+
+      - name: Test
+        run: pytest -q
+
+      - name: Build a real site with the plugin
+        shell: bash
+        run: |
+          mkdir -p e2e/docs/assets
+          printf 'body { color: #c2410c; }\n' > e2e/docs/assets/a.css
+          printf '@import url("a.css");\n' > e2e/docs/assets/b.css
+          printf 'window.__ok=true;\n' > e2e/docs/assets/a.js
+          printf '# e2e\n' > e2e/docs/index.md
+          cat > e2e/mkdocs.yml <<'YAML'
+          site_name: e2e
+          theme:
+            name: material
+          plugins:
+            - asset-integrity:
+                report: true
+          extra_css: [assets/b.css]
+          extra_javascript: [assets/a.js]
+          nav:
+            - Home: index.md
+          YAML
+          python -m mkdocs build -f e2e/mkdocs.yml -d "$PWD/e2e/out" --strict
+
+      - name: Assert the output is hashed and self-consistent
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64, hashlib, pathlib, re, sys
+          out = pathlib.Path("e2e/out")
+          html = (out / "index.html").read_text(encoding="utf-8")
+
+          # Every referenced local asset must exist and be content-hashed.
+          urls = re.findall(r'(?:href|src)="([^"]+\.(?:css|js))"', html)
+          local = [u for u in urls if not u.startswith(("http", "//"))]
+          assert local, "no local assets found"
+          missing = [u for u in local if not (out / u).is_file()]
+          assert not missing, f"referenced but missing: {missing}"
+
+          # Every integrity attribute must describe the bytes on disk.
+          pairs = re.findall(
+              r'(?:href|src)="([^"]+\.(?:css|js))"[^>]*?integrity="([^"]+)"', html
+          )
+          assert pairs, "no integrity attributes emitted"
+          for url, sri in pairs:
+              algo, expected = sri.split("-", 1)
+              actual = base64.b64encode(
+                  hashlib.new(algo, (out / url).read_bytes()).digest()
+              ).decode()
+              assert actual == expected, f"SRI mismatch for {url}: {sri}"
+
+          # The @import chain must survive: b.css must point at a real file.
+          b = next((out / "assets").glob("b.*.css"))
+          imported = re.search(r'@import url\("([^"]+)"\)', b.read_text(encoding="utf-8")).group(1)
+          assert (out / "assets" / imported).is_file(), f"dangling @import: {imported}"
+
+          print(f"OK: {len(local)} local assets, {len(pairs)} integrity values verified")
+          PY

@@ -1,0 +1,61 @@
+site_name: mkdocs-asset-integrity
+site_description: Content hashing and Subresource Integrity for MkDocs assets.
+site_url: https://linmoxi33.github.io/mkdocs-asset-integrity/
+repo_url: https://github.com/linmoxi33/mkdocs-asset-integrity
+repo_name: linmoxi33/mkdocs-asset-integrity
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: en
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep orange
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep orange
+      accent: amber
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.highlight
+
+extra_css:
+  - assets/extra.css
+
+plugins:
+  - search
+  - asset-integrity:
+      report: true
+      include_theme_assets: false
+
+nav:
+  - Home: index.md
+  - Why this exists: rationale.md
+  - Configuration: configuration.md
+  - How it works: internals.md
+  - Limits: limits.md
+  - Changelog: changelog.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - attr_list
+  - tables
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/linmoxi33

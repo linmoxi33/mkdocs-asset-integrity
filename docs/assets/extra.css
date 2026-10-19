@@ -1,0 +1,35 @@
+/* Warm editorial accent, matching the rest of this author's documentation. */
+:root {
+  --ai-accent: #c2410c;
+  --ai-accent-soft: rgba(194, 65, 12, 0.08);
+}
+
+.md-typeset a {
+  text-underline-offset: 0.15em;
+}
+
+.md-typeset h1 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.md-typeset table:not([class]) th {
+  background: var(--ai-accent-soft);
+}
+
+.md-typeset code {
+  font-size: 0.82em;
+}
+
+/* Make the before/after example readable rather than decorative. */
+.md-typeset pre > code {
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+/* SRI values are long unbreakable tokens; wrap instead of overflowing. */
+.md-typeset pre > code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}

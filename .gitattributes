@@ -1,0 +1,8 @@
+# Normalise line endings on commit so CI (Linux) and Windows agree on bytes.
+# This matters for a plugin whose entire job is hashing file contents: a stray
+# CRLF would change a fingerprint without changing anything the author sees.
+* text=auto eol=lf
+
+*.png binary
+*.whl binary
+*.gz binary

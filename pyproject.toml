@@ -1,0 +1,44 @@
+[build-system]
+# setuptools>=77 is needed for the SPDX `license = "MIT"` string form; the
+# table form below works on older setuptools, so the floor stays lower for
+# wider pip compatibility (older venvs ship older setuptools).
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mkdocs-asset-integrity"
+version = "0.1.0"
+description = "Content-hash and Subresource-Integrity your MkDocs CSS/JS, so browsers and CDNs cannot serve stale or tampered assets."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [{ name = "Vespera" }]
+keywords = ["mkdocs", "sri", "subresource-integrity", "cache-busting", "fingerprint"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Framework :: MkDocs",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Documentation",
+]
+dependencies = ["mkdocs>=1.4"]
+
+[project.optional-dependencies]
+test = ["pytest>=7", "mkdocs-material>=9"]
+
+[project.urls]
+Homepage = "https://github.com/linmoxi33/mkdocs-asset-integrity"
+Issues = "https://github.com/linmoxi33/mkdocs-asset-integrity/issues"
+
+[project.entry-points."mkdocs.plugins"]
+asset-integrity = "mkdocs_asset_integrity:AssetIntegrityPlugin"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
